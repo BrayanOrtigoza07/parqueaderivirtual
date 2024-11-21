@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react'; // Eliminamos useEffect porque no se utiliza
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Gym() {
@@ -23,15 +23,29 @@ function GymContent() {
 
   const parkingLot = { name: 'Parqueadero Gym', spaces: 10 };
 
-  const [spaces, setSpaces] = useState(
-    Array.from({ length: parkingLot.spaces }, (_, i) => ({
-      id: i + 1,
-      status: 'Disponible',
-    }))
-  );
-
+  // Estado para los espacios
+  const [spaces, setSpaces] = useState<{ id: number; status: string }[]>([]);
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // Cargar espacios desde la base de datos al iniciar el componente
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      try {
+        const response = await fetch('/api/parking/spaces?parkingLot=Parqueadero Gym');
+        if (response.ok) {
+          const data = await response.json();
+          setSpaces(data.spaces);
+        } else {
+          console.error('Error al cargar los espacios:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error al conectar con la API:', error);
+      }
+    };
+
+    fetchSpaces();
+  }, []);
 
   const handleSpaceSelect = (id: number) => {
     setSelectedSpace(id);
@@ -72,7 +86,7 @@ function GymContent() {
     // Enviar los datos a la base de datos
     await sendDataToDatabase();
 
-    // Actualizar el estado del espacio seleccionado
+    // Actualizar estado local
     setSpaces((prevSpaces) =>
       prevSpaces.map((space) =>
         space.id === selectedSpace ? { ...space, status: 'Ocupado' } : space
