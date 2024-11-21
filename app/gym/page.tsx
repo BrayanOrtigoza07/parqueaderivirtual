@@ -15,12 +15,12 @@ function GymContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Datos del usuario desde los parámetros
-  const userData = {
+  // Datos del usuario desde los parámetros de búsqueda
+  const [userData, setUserData] = useState({
     name: searchParams.get('name') || 'Usuario Anónimo',
     role: searchParams.get('role') || 'No especificado',
     plate: searchParams.get('plate') || 'Sin placa',
-  };
+  });
 
   const parkingLot = { name: 'Parqueadero Gym', spaces: 10 };
 
@@ -35,35 +35,11 @@ function GymContent() {
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  // Cargar espacios desde la base de datos
-  useEffect(() => {
-    const fetchSpaces = async () => {
-      try {
-        const response = await fetch(`/api/parking/spaces?parkingLot=${encodeURIComponent(parkingLot.name)}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSpaces(data.spaces || []); // Asegurar que se obtenga un arreglo
-        } else {
-          console.error('Error al cargar los espacios:', await response.text());
-        }
-      } catch (error) {
-        console.error('Error al conectar con la API:', error);
-      }
-    };
-
-    fetchSpaces();
-  }, []);
-
   const handleSpaceSelect = (id: number) => {
     setSelectedSpace(id);
   };
 
   const sendDataToDatabase = async () => {
-    if (!selectedSpace) {
-      console.error('No hay un espacio seleccionado');
-      return;
-    }
-
     const body = {
       name: userData.name,
       role: userData.role,
