@@ -14,15 +14,26 @@ export default function ParkingPage() {
     plate: searchParams.get('plate') || 'Sin placa',
   };
 
+  // Definir tipos para evitar el uso de `any`
+  interface ParkingSpace {
+    id: number;
+    status: string;
+  }
+
+  interface ParkingLot {
+    name: string;
+    spaces: number;
+  }
+
   // Lista de parqueaderos y sus espacios
-  const parkingLots = [
+  const parkingLots: ParkingLot[] = [
     { name: 'Parqueadero Gym', spaces: 10 },
     { name: 'Parqueadero Agronomía', spaces: 12 },
     { name: 'Parqueadero Central', spaces: 16 },
   ];
 
   const [selectedParkingLot, setSelectedParkingLot] = useState<string | null>(null);
-  const [spaces, setSpaces] = useState<{ id: number; status: string }[]>([]);
+  const [spaces, setSpaces] = useState<ParkingSpace[]>([]);
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
@@ -34,10 +45,10 @@ export default function ParkingPage() {
       try {
         const response = await fetch('/api/parking');
         if (response.ok) {
-          const data = await response.json();
+          const data: { parking_lot: string; space: number }[] = await response.json();
           const occupiedSpaces = data
-            .filter((entry: any) => entry.parking_lot === selectedParkingLot)
-            .map((entry: any) => entry.space);
+            .filter((entry) => entry.parking_lot === selectedParkingLot)
+            .map((entry) => entry.space);
 
           // Configuramos los espacios según los ocupados
           const lot = parkingLots.find((lot) => lot.name === selectedParkingLot);
@@ -56,7 +67,7 @@ export default function ParkingPage() {
     };
 
     fetchOccupiedSpaces();
-  }, [selectedParkingLot]);
+  }, [selectedParkingLot, parkingLots]);
 
   const handleParkingLotSelect = (lotName: string) => {
     setSelectedParkingLot(lotName);
