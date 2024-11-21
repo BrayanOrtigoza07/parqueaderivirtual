@@ -1,9 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function ParkingPage() {
+  return (
+    <Suspense fallback={<div>Cargando página del parqueadero...</div>}>
+      <ParkingContent />
+    </Suspense>
+  );
+}
+
+function ParkingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -14,26 +22,18 @@ export default function ParkingPage() {
     plate: searchParams.get('plate') || 'Sin placa',
   };
 
-  // Definir tipos para evitar el uso de `any`
-  interface ParkingSpace {
-    id: number;
-    status: string;
-  }
-
-  interface ParkingLot {
-    name: string;
-    spaces: number;
-  }
-
-  // Lista de parqueaderos y sus espacios
-  const parkingLots: ParkingLot[] = [
-    { name: 'Parqueadero Gym', spaces: 10 },
-    { name: 'Parqueadero Agronomía', spaces: 12 },
-    { name: 'Parqueadero Central', spaces: 16 },
-  ];
+  // Memoizar la lista de parqueaderos para evitar recrearla en cada render
+  const parkingLots = useMemo(
+    () => [
+      { name: 'Parqueadero Gym', spaces: 10 },
+      { name: 'Parqueadero Agronomía', spaces: 12 },
+      { name: 'Parqueadero Central', spaces: 16 },
+    ],
+    []
+  );
 
   const [selectedParkingLot, setSelectedParkingLot] = useState<string | null>(null);
-  const [spaces, setSpaces] = useState<ParkingSpace[]>([]);
+  const [spaces, setSpaces] = useState<{ id: number; status: string }[]>([]);
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
@@ -45,12 +45,11 @@ export default function ParkingPage() {
       try {
         const response = await fetch('/api/parking');
         if (response.ok) {
-          const data: { parking_lot: string; space: number }[] = await response.json();
+          const data = await response.json();
           const occupiedSpaces = data
-            .filter((entry) => entry.parking_lot === selectedParkingLot)
-            .map((entry) => entry.space);
+            .filter((entry: { parking_lot: string; space: number }) => entry.parking_lot === selectedParkingLot)
+            .map((entry: { space: number }) => entry.space);
 
-          // Configuramos los espacios según los ocupados
           const lot = parkingLots.find((lot) => lot.name === selectedParkingLot);
           setSpaces(
             Array.from({ length: lot?.spaces || 0 }, (_, i) => ({
@@ -59,7 +58,7 @@ export default function ParkingPage() {
             }))
           );
         } else {
-          console.error('Error al cargar espacios:', await response.text());
+          console.error('Error al cargar los espacios:', await response.text());
         }
       } catch (error) {
         console.error('Error al conectar con la API:', error);
@@ -83,7 +82,6 @@ export default function ParkingPage() {
       return;
     }
 
-    // Datos a enviar al backend
     const body = {
       name: userData.name,
       role: userData.role,
@@ -100,20 +98,12 @@ export default function ParkingPage() {
       });
 
       if (response.ok) {
-        console.log('Espacio registrado exitosamente.');
-
-        // Actualizamos el estado local
         setSpaces((prevSpaces) =>
           prevSpaces.map((space) =>
-            space.id === selectedSpace
-              ? { ...space, status: 'Ocupado' }
-              : space
+            space.id === selectedSpace ? { ...space, status: 'Ocupado' } : space
           )
         );
-
         setIsConfirmed(true);
-
-        // Redirigir después de 3 segundos
         setTimeout(() => {
           router.push('/');
         }, 3000);
@@ -126,7 +116,6 @@ export default function ParkingPage() {
   };
 
   if (!selectedParkingLot) {
-    // Mostrar las opciones de parqueaderos
     return (
       <div className="min-h-screen bg-gray-100 py-10">
         <h1 className="text-3xl font-bold text-center mb-6">Selecciona un Parqueadero</h1>
@@ -163,7 +152,6 @@ export default function ParkingPage() {
     );
   }
 
-  // Mostrar los espacios del parqueadero seleccionado
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <h1 className="text-3xl font-bold text-center mb-6">{selectedParkingLot}</h1>
