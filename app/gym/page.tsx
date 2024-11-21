@@ -91,9 +91,6 @@ function ParkingContent() {
           )
         );
         setIsConfirmed(true);
-        setTimeout(() => {
-          router.push('/');
-        }, 3000);
       } else {
         console.error('Error al registrar el espacio:', await response.text());
       }
@@ -105,16 +102,25 @@ function ParkingContent() {
   if (isConfirmed) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-        <h1 className="text-2xl font-bold text-green-600 mb-4">¡Gracias por su ingreso!</h1>
-        <p className="mb-6">Lo esperamos a la salida.</p>
-        <div className="bg-white p-6 rounded shadow-md text-left">
-          <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
-          <p><strong>Nombre:</strong> {userData.name}</p>
-          <p><strong>Rol:</strong> {userData.role}</p>
-          <p><strong>Placa:</strong> {userData.plate}</p>
-          <p><strong>Parqueadero:</strong> {selectedParkingLot}</p>
-          <p><strong>Espacio:</strong> {selectedSpace}</p>
-          <p><strong>Hora:</strong> {new Date().toLocaleString()}</p>
+        <div className="flex items-center space-x-4 mb-6">
+          <h1 className="text-4xl font-bold text-green-600">¡Gracias por su ingreso!</h1>
+          <img
+            src="https://media1.tenor.com/m/atRVxzCTOVYAAAAC/neon-sign-neon.gif"
+            alt="Neon Sign"
+            className="w-20 h-20"
+          />
+        </div>
+        <p className="text-lg text-gray-700 mb-8">Lo esperamos a la salida.</p>
+        <div className="bg-white p-8 rounded shadow-md text-left w-96">
+          <h2 className="text-2xl font-bold mb-4 text-center">Detalles del Registro</h2>
+          <div className="text-lg space-y-2">
+            <p><strong>Nombre:</strong> {userData.name}</p>
+            <p><strong>Rol:</strong> {userData.role}</p>
+            <p><strong>Placa:</strong> {userData.plate}</p>
+            <p><strong>Parqueadero:</strong> {selectedParkingLot}</p>
+            <p><strong>Espacio:</strong> {selectedSpace}</p>
+            <p><strong>Hora:</strong> {new Date().toLocaleString()}</p>
+          </div>
         </div>
       </div>
     );
