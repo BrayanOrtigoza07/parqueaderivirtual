@@ -47,7 +47,7 @@ function GymContent() {
     };
 
     try {
-      const response = await fetch('https://parqueaderoivirtual.vercel.app/api/parking', {
+      const response = await fetch('/api/parking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
