@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState } from 'react'; // Eliminamos useEffect porque no se utiliza
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Gym() {
