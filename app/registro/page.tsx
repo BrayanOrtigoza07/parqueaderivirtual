@@ -21,8 +21,13 @@ export default function Registro() {
       alert('Por favor, completa todos los campos antes de elegir un parqueadero.');
       return;
     }
-    // Redirige a la página específica del parqueadero
-    router.push(`/${parkingLot}`);
+    // Redirige a la página específica del parqueadero con los datos del formulario en la URL
+    const query = new URLSearchParams({
+      name: formData.name,
+      role: formData.role,
+      plate: formData.plate,
+    }).toString();
+    router.push(`/${parkingLot}?${query}`);
   };
 
   return (

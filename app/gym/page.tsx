@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Gym() {
@@ -15,25 +15,35 @@ function GymContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Datos del usuario desde los parámetros de búsqueda
-  const userData = {
-    name: searchParams.get('name') || 'Usuario Anónimo',
-    role: searchParams.get('role') || 'No especificado',
-    plate: searchParams.get('plate') || 'Sin placa',
-  };
+  const [userData, setUserData] = useState({
+    name: '',
+    role: '',
+    plate: '',
+  });
 
   const parkingLot = { name: 'Parqueadero Gym', spaces: 10 };
 
-  // Estado para los espacios del parqueadero
   const [spaces, setSpaces] = useState(
     Array.from({ length: parkingLot.spaces }, (_, i) => ({
       id: i + 1,
-      status: 'Disponible', // Inicializar todos como disponibles
+      status: 'Disponible',
     }))
   );
 
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // Cargar datos del usuario desde los parámetros de búsqueda
+  useEffect(() => {
+    const name = searchParams.get('name') || 'Usuario Anónimo';
+    const role = searchParams.get('role') || 'No especificado';
+    const plate = searchParams.get('plate') || 'Sin placa';
+
+    // Mostrar los datos en la consola para verificar
+    console.log('Datos del usuario:', { name, role, plate });
+
+    setUserData({ name, role, plate });
+  }, [searchParams]);
 
   const handleSpaceSelect = (id: number) => {
     setSelectedSpace(id);
