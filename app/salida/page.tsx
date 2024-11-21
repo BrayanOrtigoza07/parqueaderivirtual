@@ -16,10 +16,10 @@ interface HistorySalida {
 export default function Salida() {
   const [plate, setPlate] = useState('');
   const [message, setMessage] = useState('');
-  const [lastRecord, setLastRecord] = useState<HistorySalida | null>(null); // Definir tipo explícito
+  const [lastRecord, setLastRecord] = useState<HistorySalida | null>(null);
 
   const handlePlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlate(e.target.value);
+    setPlate(e.target.value.toUpperCase()); // Convertir la placa a mayúsculas por consistencia
   };
 
   const handleExit = async () => {
@@ -37,6 +37,9 @@ export default function Salida() {
       });
 
       if (response.ok) {
+        // Esperar unos milisegundos antes de intentar recuperar el registro
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         // Solicitar detalles del registro desde `history_salidas`
         const fetchResponse = await fetch(`/api/history/salida?plate=${plate}`);
         const record = await fetchResponse.json();
@@ -45,7 +48,7 @@ export default function Salida() {
           setLastRecord(record[0]); // Guardar el último registro obtenido
           setMessage(`Espacio liberado exitosamente para la placa: ${plate}.`);
         } else {
-          setMessage(`Error al obtener el historial: ${record.error || 'No se encontraron datos.'}`);
+          setMessage(`Error: No se encontraron datos en el historial para la placa ${plate}.`);
         }
         setPlate(''); // Limpiar el campo de entrada
       } else {
@@ -88,11 +91,21 @@ export default function Salida() {
       {lastRecord && (
         <div className="mt-6 bg-white p-6 rounded shadow-md text-left">
           <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
-          <p><strong>Nombre:</strong> {lastRecord.name}</p>
-          <p><strong>Rol:</strong> {lastRecord.role}</p>
-          <p><strong>Placa:</strong> {lastRecord.plate}</p>
-          <p><strong>Parqueadero:</strong> {lastRecord.parking_lot}</p>
-          <p><strong>Espacio:</strong> {lastRecord.space}</p>
+          <p>
+            <strong>Nombre:</strong> {lastRecord.name}
+          </p>
+          <p>
+            <strong>Rol:</strong> {lastRecord.role}
+          </p>
+          <p>
+            <strong>Placa:</strong> {lastRecord.plate}
+          </p>
+          <p>
+            <strong>Parqueadero:</strong> {lastRecord.parking_lot}
+          </p>
+          <p>
+            <strong>Espacio:</strong> {lastRecord.space}
+          </p>
           <p>
             <strong>Hora de Entrada:</strong>{' '}
             {new Date(lastRecord.entry_time).toLocaleString()}
