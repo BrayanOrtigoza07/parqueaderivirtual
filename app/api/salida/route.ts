@@ -1,55 +1,49 @@
 import { NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
-// Configuración de la conexión a la base de datos
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-// Manejo del método POST para liberar un espacio
 export async function POST(req: Request) {
   try {
     const { plate } = await req.json();
 
     if (!plate) {
       return NextResponse.json(
-        { error: 'La placa es requerida.' },
+        { error: 'Placa no proporcionada' },
         { status: 400 }
       );
     }
 
-    // Buscar el registro con la placa proporcionada
-    const client = await pool.connect();
-    const selectQuery = `
-      SELECT * FROM parking_entries WHERE plate = $1 AND exit_time IS NULL;
+    // Actualizar el espacio a "Disponible" en la base de datos
+    const query = `
+      DELETE FROM parking_entries
+      WHERE plate = $1
+      RETURNING *;
     `;
-    const selectResult = await client.query(selectQuery, [plate]);
+    const values = [plate];
 
-    if (selectResult.rows.length === 0) {
-      client.release();
+    const client = await pool.connect();
+    const result = await client.query(query, values);
+    client.release();
+
+    if (result.rowCount === 0) {
       return NextResponse.json(
-        { error: 'No se encontró un vehículo con esa placa actualmente estacionado.' },
+        { error: 'Placa no encontrada' },
         { status: 404 }
       );
     }
 
-    const updateQuery = `
-      UPDATE parking_entries
-      SET exit_time = NOW()
-      WHERE plate = $1 AND exit_time IS NULL;
-    `;
-    await client.query(updateQuery, [plate]);
-
-    client.release();
     return NextResponse.json(
-      { message: `Espacio liberado exitosamente para la placa: ${plate}` },
+      { message: `Espacio liberado para la placa: ${plate}` },
       { status: 200 }
     );
   } catch (error) {
     console.error('Error al liberar el espacio:', error);
     return NextResponse.json(
-      { error: 'Error al liberar el espacio en la base de datos.' },
+      { error: 'Error al liberar el espacio en la base de datos' },
       { status: 500 }
     );
   }
