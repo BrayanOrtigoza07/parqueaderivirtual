@@ -91,6 +91,11 @@ function ParkingContent() {
           )
         );
         setIsConfirmed(true);
+
+        // Redirigir automáticamente a la página principal después de 4 segundos
+        setTimeout(() => {
+          router.push('/');
+        }, 4000);
       } else {
         console.error('Error al registrar el espacio:', await response.text());
       }
