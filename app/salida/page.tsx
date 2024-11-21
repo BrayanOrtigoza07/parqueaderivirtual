@@ -2,24 +2,12 @@
 
 import { useState } from 'react';
 
-// Definir el tipo del registro que se espera
-interface HistorySalida {
-  name: string;
-  role: string;
-  plate: string;
-  parking_lot: string;
-  space: number;
-  entry_time: string;
-  exit_time: string;
-}
-
 export default function Salida() {
   const [plate, setPlate] = useState('');
-  const [message, setMessage] = useState(''); // Mensaje reducido
-  const [lastRecord, setLastRecord] = useState<HistorySalida | null>(null);
+  const [message, setMessage] = useState('');
 
   const handlePlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlate(e.target.value.toUpperCase()); // Convertir a mayúsculas por consistencia
+    setPlate(e.target.value);
   };
 
   const handleExit = async () => {
@@ -29,7 +17,6 @@ export default function Salida() {
     }
 
     try {
-      // Enviar solicitud para liberar espacio
       const response = await fetch('/api/salida', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,7 +24,7 @@ export default function Salida() {
       });
 
       if (response.ok) {
-        setMessage('Espacio liberado exitosamente.'); // Mensaje simplificado
+        setMessage('Espacio liberado exitosamente.');
         setPlate(''); // Limpiar el campo de entrada
       } else {
         const error = await response.json();
@@ -72,7 +59,7 @@ export default function Salida() {
         </button>
       </div>
       {message && (
-        <div className="mt-4 p-4 bg-green-100 text-green-700 text-center rounded">
+        <div className="mt-4 p-4 bg-gray-200 text-center rounded">
           <p>{message}</p>
         </div>
       )}
