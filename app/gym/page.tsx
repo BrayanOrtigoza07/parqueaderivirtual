@@ -128,7 +128,7 @@ function ParkingContent() {
       >
         Volver a Registro
       </button>
-      <h1 className="text-3xl font-bold text-center mb-6">{selectedParkingLot}</h1>
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">{selectedParkingLot}</h1>
       <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
         {spaces.map((space) => (
           <button
