@@ -31,27 +31,32 @@ export default function Registro() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold mb-6">Registro de vehículo</h1>
-      <form className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Nombre del conductor</label>
+    <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center px-4">
+      {/* Título */}
+      <h1 className="text-4xl font-extrabold text-blue-600 mb-8 text-center">
+        Registro de Vehículo
+      </h1>
+      {/* Formulario */}
+      <form className="bg-white shadow-lg p-8 rounded-lg w-full max-w-lg">
+        <div className="mb-6">
+          <label className="block font-semibold mb-2 text-gray-700">Nombre del conductor</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese su nombre"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Rol</label>
+        <div className="mb-6">
+          <label className="block font-semibold mb-2 text-gray-700">Rol</label>
           <select
             name="role"
             value={formData.role}
             onChange={handleInputChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">-- Seleccionar --</option>
@@ -60,40 +65,51 @@ export default function Registro() {
             <option value="administrativo">Administrativo</option>
           </select>
         </div>
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Placa del vehículo</label>
+        <div className="mb-6">
+          <label className="block font-semibold mb-2 text-gray-700">Placa del vehículo</label>
           <input
             type="text"
             name="plate"
             value={formData.plate}
             onChange={handleInputChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese la placa del vehículo"
             required
           />
         </div>
       </form>
-      <div className="mt-6">
-        <h2 className="text-xl font-bold mb-4">Selecciona un parqueadero</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Botones de parqueaderos */}
+      <div className="mt-8 text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Selecciona un parqueadero</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <button
             onClick={() => handleParkingLotSelect('gym')}
-            className="px-6 py-3 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+            className="px-6 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105"
           >
             Parqueadero Gym
           </button>
           <button
             onClick={() => handleParkingLotSelect('agronomia')}
-            className="px-6 py-3 bg-green-500 text-white font-semibold rounded hover:bg-green-600"
+            className="px-6 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-transform transform hover:scale-105"
           >
             Parqueadero Agronomía
           </button>
           <button
             onClick={() => handleParkingLotSelect('central')}
-            className="px-6 py-3 bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-600"
+            className="px-6 py-4 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition-transform transform hover:scale-105"
           >
             Parqueadero Central
           </button>
         </div>
+      </div>
+      {/* Botón para regresar */}
+      <div className="mt-8">
+        <button
+          onClick={() => router.push('/')}
+          className="px-6 py-3 bg-gray-500 text-white font-bold rounded-lg shadow-md hover:bg-gray-600 transition-transform transform hover:scale-105"
+        >
+          Volver al inicio
+        </button>
       </div>
     </div>
   );
