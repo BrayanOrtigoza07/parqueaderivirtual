@@ -15,7 +15,7 @@ interface HistorySalida {
 export default function Salida() {
   const [plate, setPlate] = useState('');
   const [message, setMessage] = useState('');
-  const [record, setRecord] = useState<HistorySalida | null>(null);
+  const [latestRecord, setLatestRecord] = useState<HistorySalida | null>(null);
 
   const handlePlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPlate(e.target.value);
@@ -28,6 +28,7 @@ export default function Salida() {
     }
 
     try {
+      // Llamada a la API para liberar el espacio
       const response = await fetch('/api/salida', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -35,30 +36,31 @@ export default function Salida() {
       });
 
       if (response.ok) {
-        const data = await fetchHistorySalida(plate); // Cargar los datos de la placa específica
-        setRecord(data);
         setMessage(`Espacio liberado exitosamente para la placa: ${plate}.`);
+        // Obtener el último registro de la tabla `history_salidas`
+        const latestData = await fetchLatestSalida(plate);
+        setLatestRecord(latestData);
         setPlate(''); // Limpiar el campo de entrada
       } else {
         const error = await response.json();
         setMessage(`Error: ${error.error}`);
-        setRecord(null);
+        setLatestRecord(null);
       }
     } catch (error) {
       console.error('Error al liberar el espacio:', error);
       setMessage('Error al conectar con el servidor.');
-      setRecord(null);
+      setLatestRecord(null);
     }
   };
 
-  const fetchHistorySalida = async (plate: string): Promise<HistorySalida | null> => {
+  const fetchLatestSalida = async (plate: string): Promise<HistorySalida | null> => {
     try {
       const response = await fetch(`/api/history-salidas?plate=${plate}`);
       if (response.ok) {
         const data: HistorySalida = await response.json();
         return data;
       } else {
-        console.error('Error al obtener los datos de la placa:', await response.text());
+        console.error('Error al obtener los datos:', await response.text());
         return null;
       }
     } catch (error) {
@@ -95,10 +97,10 @@ export default function Salida() {
         )}
       </div>
 
-      {/* Mostrar datos específicos de la placa */}
-      {record && (
+      {/* Mostrar el último registro agregado a la tabla `history_salidas` */}
+      {latestRecord && (
         <div className="bg-white p-6 rounded shadow-md w-full max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4">Detalle de la Salida</h2>
+          <h2 className="text-2xl font-bold mb-4">Último Registro en Historial de Salidas</h2>
           <table className="table-auto w-full border-collapse border border-gray-300">
             <thead>
               <tr>
@@ -113,13 +115,13 @@ export default function Salida() {
             </thead>
             <tbody>
               <tr>
-                <td className="border border-gray-300 px-4 py-2">{record.name}</td>
-                <td className="border border-gray-300 px-4 py-2">{record.role}</td>
-                <td className="border border-gray-300 px-4 py-2">{record.plate}</td>
-                <td className="border border-gray-300 px-4 py-2">{record.parking_lot}</td>
-                <td className="border border-gray-300 px-4 py-2">{record.space}</td>
-                <td className="border border-gray-300 px-4 py-2">{record.entry_time}</td>
-                <td className="border border-gray-300 px-4 py-2">{record.exit_time}</td>
+                <td className="border border-gray-300 px-4 py-2">{latestRecord.name}</td>
+                <td className="border border-gray-300 px-4 py-2">{latestRecord.role}</td>
+                <td className="border border-gray-300 px-4 py-2">{latestRecord.plate}</td>
+                <td className="border border-gray-300 px-4 py-2">{latestRecord.parking_lot}</td>
+                <td className="border border-gray-300 px-4 py-2">{latestRecord.space}</td>
+                <td className="border border-gray-300 px-4 py-2">{latestRecord.entry_time}</td>
+                <td className="border border-gray-300 px-4 py-2">{latestRecord.exit_time}</td>
               </tr>
             </tbody>
           </table>
