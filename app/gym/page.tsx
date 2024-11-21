@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useMemo } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function ParkingPage() {
@@ -22,17 +22,14 @@ function ParkingContent() {
     plate: searchParams.get('plate') || 'Sin placa',
   };
 
-  // Lista de parqueaderos
-  const parkingLots = useMemo(
-    () => [
-      { name: 'Parqueadero Gym', spaces: 10 },
-      { name: 'Parqueadero Agronomía', spaces: 12 },
-      { name: 'Parqueadero Central', spaces: 16 },
-    ],
-    []
-  );
+  // Definir los espacios de parqueaderos con tipos explícitos
+  const parkingSpaces: Record<string, number> = {
+    'Parqueadero Gym': 10,
+    'Parqueadero Agronomía': 12,
+    'Parqueadero Central': 16,
+  };
 
-  const [selectedParkingLot, setSelectedParkingLot] = useState<string | null>(null);
+  const selectedParkingLot = searchParams.get('parkingLot') || 'Parqueadero Gym';
   const [spaces, setSpaces] = useState<{ id: number; status: string }[]>([]);
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -40,8 +37,6 @@ function ParkingContent() {
   // Cargar espacios ocupados desde la base de datos
   useEffect(() => {
     const fetchOccupiedSpaces = async () => {
-      if (!selectedParkingLot) return;
-
       try {
         const response = await fetch('/api/parking');
         if (response.ok) {
@@ -50,9 +45,8 @@ function ParkingContent() {
             .filter((entry: { parking_lot: string; space: number }) => entry.parking_lot === selectedParkingLot)
             .map((entry: { space: number }) => entry.space);
 
-          const lot = parkingLots.find((lot) => lot.name === selectedParkingLot);
           setSpaces(
-            Array.from({ length: lot?.spaces || 0 }, (_, i) => ({
+            Array.from({ length: parkingSpaces[selectedParkingLot] || 0 }, (_, i) => ({
               id: i + 1,
               status: occupiedSpaces.includes(i + 1) ? 'Ocupado' : 'Disponible',
             }))
@@ -66,11 +60,7 @@ function ParkingContent() {
     };
 
     fetchOccupiedSpaces();
-  }, [selectedParkingLot, parkingLots]);
-
-  const handleParkingLotSelect = (lotName: string) => {
-    setSelectedParkingLot(lotName);
-  };
+  }, [selectedParkingLot]);
 
   const handleSpaceSelect = (id: number) => {
     setSelectedSpace(id);
@@ -78,7 +68,7 @@ function ParkingContent() {
 
   const handleConfirm = async () => {
     if (!selectedSpace || !selectedParkingLot) {
-      alert('Por favor, selecciona un parqueadero y un espacio.');
+      alert('Por favor, selecciona un espacio.');
       return;
     }
 
@@ -128,25 +118,6 @@ function ParkingContent() {
           <p><strong>Parqueadero:</strong> {selectedParkingLot}</p>
           <p><strong>Espacio:</strong> {selectedSpace}</p>
           <p><strong>Hora:</strong> {new Date().toLocaleString()}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!selectedParkingLot) {
-    return (
-      <div className="min-h-screen bg-gray-100 py-10">
-        <h1 className="text-3xl font-bold text-center mb-6">Selecciona un Parqueadero</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mx-auto">
-          {parkingLots.map((lot) => (
-            <button
-              key={lot.name}
-              onClick={() => handleParkingLotSelect(lot.name)}
-              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
-            >
-              {lot.name}
-            </button>
-          ))}
         </div>
       </div>
     );
