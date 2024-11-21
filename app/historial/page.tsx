@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-// Definimos un tipo para las entradas y salidas
-type ParkingEntry = {
+// Tipo de datos para entradas y salidas
+type ParkingRecord = {
   id: number;
   name: string;
   role: string;
@@ -15,29 +15,27 @@ type ParkingEntry = {
 };
 
 export default function Historial() {
-  const [entries, setEntries] = useState<ParkingEntry[]>([]);
-  const [exits, setExits] = useState<ParkingEntry[]>([]);
+  const [entries, setEntries] = useState<ParkingRecord[]>([]);
+  const [exits, setExits] = useState<ParkingRecord[]>([]);
 
+  const fetchHistorial = async () => {
+    try {
+      // Obtener entradas desde la API
+      const responseEntries = await fetch('/api/parking');
+      const dataEntries: ParkingRecord[] = await responseEntries.json();
+      setEntries(dataEntries);
+
+      // Obtener salidas desde la API
+      const responseExits = await fetch('/api/salida');
+      const dataExits: ParkingRecord[] = await responseExits.json();
+      setExits(dataExits);
+    } catch (error) {
+      console.error('Error al cargar el historial:', error);
+    }
+  };
+
+  // Cargar historial al montar el componente
   useEffect(() => {
-    const fetchHistorial = async () => {
-      try {
-        // Obtener todas las entradas
-        const responseEntries = await fetch('/api/parking');
-        const dataEntries: ParkingEntry[] = await responseEntries.json();
-
-        // Filtrar las entradas que no tienen hora de salida
-        setEntries(dataEntries.filter((entry) => !entry.exit_time));
-
-        // Obtener todas las salidas
-        const responseExits = await fetch('/api/salida');
-        const dataExits: ParkingEntry[] = await responseExits.json();
-
-        setExits(dataExits);
-      } catch (error) {
-        console.error('Error al cargar el historial:', error);
-      }
-    };
-
     fetchHistorial();
   }, []);
 
@@ -68,7 +66,7 @@ export default function Historial() {
                 <td className="border p-2">{entry.parking_lot}</td>
                 <td className="border p-2 text-center">{entry.space}</td>
                 <td className="border p-2">
-                  {entry.entry_time ? new Date(entry.entry_time).toLocaleString() : 'Sin hora de entrada'}
+                  {entry.entry_time ? new Date(entry.entry_time).toLocaleString() : 'N/A'}
                 </td>
               </tr>
             ))}
@@ -100,10 +98,10 @@ export default function Historial() {
                 <td className="border p-2">{exit.parking_lot}</td>
                 <td className="border p-2 text-center">{exit.space}</td>
                 <td className="border p-2">
-                  {exit.entry_time ? new Date(exit.entry_time).toLocaleString() : 'Sin hora de entrada'}
+                  {exit.entry_time ? new Date(exit.entry_time).toLocaleString() : 'N/A'}
                 </td>
                 <td className="border p-2">
-                  {exit.exit_time ? new Date(exit.exit_time).toLocaleString() : 'Sin hora de salida'}
+                  {exit.exit_time ? new Date(exit.exit_time).toLocaleString() : 'N/A'}
                 </td>
               </tr>
             ))}
