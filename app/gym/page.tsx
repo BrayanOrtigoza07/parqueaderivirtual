@@ -60,7 +60,7 @@ function ParkingContent() {
   }, [selectedParkingLot]);
 
   const handleSpaceSelect = (id: number) => {
-    setSelectedSpace(id);
+    setSelectedSpace(id); // Actualizamos el espacio seleccionado
   };
 
   const handleConfirm = async () => {
@@ -136,7 +136,9 @@ function ParkingContent() {
             onClick={() => handleSpaceSelect(space.id)}
             disabled={space.status === 'Ocupado'}
             className={`p-6 border rounded-lg text-center font-bold ${
-              space.status === 'Disponible'
+              selectedSpace === space.id
+                ? 'bg-yellow-400 text-black' // Estilo especial para espacio seleccionado
+                : space.status === 'Disponible'
                 ? space.id === 1 || space.id === 2
                   ? 'bg-blue-500 text-white'
                   : 'bg-green-500 text-white'
