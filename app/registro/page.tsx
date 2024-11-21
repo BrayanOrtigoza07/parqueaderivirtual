@@ -21,7 +21,6 @@ export default function Registro() {
       alert('Por favor, completa todos los campos antes de elegir un parqueadero.');
       return;
     }
-    // Redirige a la página específica del parqueadero con los datos del formulario en la URL
     const query = new URLSearchParams({
       name: formData.name,
       role: formData.role,
@@ -33,13 +32,21 @@ export default function Registro() {
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center px-4">
       {/* Título */}
-      <h1 className="text-4xl font-extrabold text-blue-600 mb-8 text-center">
-        Registro de Vehículo
-      </h1>
+      <div className="text-center">
+        <h1 className="text-4xl font-extrabold text-blue-600 mb-8">
+          Registro de Vehículo
+        </h1>
+        <p className="text-gray-700 text-lg mb-8">
+          Por favor, completa la información para continuar.
+        </p>
+      </div>
+
       {/* Formulario */}
       <form className="bg-white shadow-lg p-8 rounded-lg w-full max-w-lg">
         <div className="mb-6">
-          <label className="block font-semibold mb-2 text-gray-700">Nombre del conductor</label>
+          <label className="block font-semibold mb-2 text-gray-700">
+            Nombre del conductor
+          </label>
           <input
             type="text"
             name="name"
@@ -56,17 +63,21 @@ export default function Registro() {
             name="role"
             value={formData.role}
             onChange={handleInputChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
-            <option value="">-- Seleccionar --</option>
+            <option value="" disabled>
+              -- Seleccionar --
+            </option>
             <option value="estudiante">Estudiante</option>
             <option value="docente">Docente</option>
             <option value="administrativo">Administrativo</option>
           </select>
         </div>
         <div className="mb-6">
-          <label className="block font-semibold mb-2 text-gray-700">Placa del vehículo</label>
+          <label className="block font-semibold mb-2 text-gray-700">
+            Placa del vehículo
+          </label>
           <input
             type="text"
             name="plate"
@@ -78,6 +89,7 @@ export default function Registro() {
           />
         </div>
       </form>
+
       {/* Botones de parqueaderos */}
       <div className="mt-8 text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Selecciona un parqueadero</h2>
@@ -102,6 +114,7 @@ export default function Registro() {
           </button>
         </div>
       </div>
+
       {/* Botón para regresar */}
       <div className="mt-8">
         <button
