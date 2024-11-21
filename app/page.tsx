@@ -9,13 +9,13 @@ export default function Home() {
       }}
     >
       {/* Franja superior */}
-      <div className="w-full bg-blue-900 py-4 flex items-center px-8">
+      <div className="w-full bg-green-700 py-4 flex items-center justify-center relative">
         <img
           src="https://techiocomunitario.org/wp-content/uploads/2023/01/ESCUDO-COLOR-H.png"
           alt="Escudo"
-          className="h-16 mr-4"
+          className="absolute left-4 h-16"
         />
-        <h1 className="text-white text-3xl font-bold">
+        <h1 className="text-white text-3xl font-bold text-center">
           Parqueadero Universidad de Cundinamarca
         </h1>
       </div>
