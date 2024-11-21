@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // Para conexiones SSL
+    rejectUnauthorized: false,
   },
 });
 
@@ -13,7 +13,15 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Consulta para insertar los datos
+    // Verificar que todos los datos necesarios estén presentes
+    if (!body.name || !body.role || !body.plate || !body.parkingLot || !body.space) {
+      return NextResponse.json(
+        { error: 'Faltan datos obligatorios' },
+        { status: 400 }
+      );
+    }
+
+    // Consulta SQL para insertar los datos
     const query = `
       INSERT INTO parking_entries (name, role, plate, parking_lot, space, entry_time)
       VALUES ($1, $2, $3, $4, $5, NOW())
@@ -35,6 +43,9 @@ export async function POST(req: Request) {
     return NextResponse.json(result.rows[0], { status: 201 });
   } catch (error) {
     console.error('Error al guardar los datos en la base de datos:', error);
-    return NextResponse.json({ error: 'Error al guardar los datos' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Error al guardar los datos en la base de datos' },
+      { status: 500 }
+    );
   }
 }

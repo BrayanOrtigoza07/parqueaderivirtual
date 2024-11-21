@@ -17,9 +17,9 @@ function GymContent() {
 
   // Obtener parámetros desde la URL
   const userData = {
-    name: searchParams.get('name') || '',
-    role: searchParams.get('role') || '',
-    plate: searchParams.get('plate') || '',
+    name: searchParams.get('name') || 'Usuario Anónimo',
+    role: searchParams.get('role') || 'No especificado',
+    plate: searchParams.get('plate') || 'Sin placa',
   };
 
   const parkingLot = { name: 'Parqueadero Gym', spaces: 10 };
@@ -27,7 +27,7 @@ function GymContent() {
   const [spaces, setSpaces] = useState(
     Array.from({ length: parkingLot.spaces }, (_, i) => ({
       id: i + 1,
-      status: 'Disponible', // Todos los espacios inician como "Disponible"
+      status: 'Disponible', // Inicializa todos los espacios como "Disponible"
     }))
   );
 
@@ -55,7 +55,7 @@ function GymContent() {
       });
 
       if (response.ok) {
-        console.log('Datos enviados exitosamente a la base de datos.');
+        console.log('Datos enviados a la base de datos exitosamente.');
       } else {
         console.error('Error al enviar los datos:', await response.text());
       }
