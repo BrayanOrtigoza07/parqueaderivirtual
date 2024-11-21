@@ -15,11 +15,11 @@ function GymContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [userData, setUserData] = useState({
-    name: '',
-    role: '',
-    plate: '',
-  });
+  const userData = {
+    name: searchParams.get('name') || 'Usuario Anónimo',
+    role: searchParams.get('role') || 'No especificado',
+    plate: searchParams.get('plate') || 'Sin placa',
+  };
 
   const parkingLot = { name: 'Parqueadero Gym', spaces: 10 };
 
@@ -32,18 +32,6 @@ function GymContent() {
 
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
-
-  // Cargar datos del usuario desde los parámetros de búsqueda
-  useEffect(() => {
-    const name = searchParams.get('name') || 'Usuario Anónimo';
-    const role = searchParams.get('role') || 'No especificado';
-    const plate = searchParams.get('plate') || 'Sin placa';
-
-    // Mostrar los datos en la consola para verificar
-    console.log('Datos del usuario:', { name, role, plate });
-
-    setUserData({ name, role, plate });
-  }, [searchParams]);
 
   const handleSpaceSelect = (id: number) => {
     setSelectedSpace(id);
@@ -84,12 +72,10 @@ function GymContent() {
     // Enviar los datos a la base de datos
     await sendDataToDatabase();
 
-    // Actualizar el estado del espacio localmente
+    // Actualizar el estado del espacio seleccionado
     setSpaces((prevSpaces) =>
       prevSpaces.map((space) =>
-        space.id === selectedSpace
-          ? { ...space, status: 'Ocupado' }
-          : space
+        space.id === selectedSpace ? { ...space, status: 'Ocupado' } : space
       )
     );
 
