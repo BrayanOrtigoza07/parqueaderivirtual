@@ -1,12 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Gym() {
+  return (
+    <Suspense fallback={<div>Cargando página del parqueadero...</div>}>
+      <GymContent />
+    </Suspense>
+  );
+}
+
+function GymContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Obtener parámetros desde la URL
   const userData = {
     name: searchParams.get('name') || '',
     role: searchParams.get('role') || '',
