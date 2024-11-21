@@ -17,33 +17,70 @@ export async function POST(req: Request) {
       );
     }
 
-    // Actualizar el espacio a "Disponible" en la base de datos
-    const query = `
-      DELETE FROM parking_entries
-      WHERE plate = $1
-      RETURNING *;
-    `;
-    const values = [plate];
-
     const client = await pool.connect();
-    const result = await client.query(query, values);
-    client.release();
 
-    if (result.rowCount === 0) {
+    // Transacción para garantizar consistencia
+    try {
+      await client.query('BEGIN');
+
+      // Obtener el registro antes de eliminarlo
+      const querySelect = `
+        SELECT * FROM parking_entries
+        WHERE plate = $1
+      `;
+      const resultSelect = await client.query(querySelect, [plate]);
+
+      if (resultSelect.rowCount === 0) {
+        await client.query('ROLLBACK');
+        return NextResponse.json(
+          { error: 'Placa no encontrada' },
+          { status: 404 }
+        );
+      }
+
+      const record = resultSelect.rows[0];
+
+      // Insertar el registro en la tabla history_salidas
+      const queryInsertHistory = `
+        INSERT INTO history_salidas (name, role, plate, parking_lot, space, entry_time, exit_time)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW())
+      `;
+      await client.query(queryInsertHistory, [
+        record.name,
+        record.role,
+        record.plate,
+        record.parking_lot,
+        record.space,
+        record.entry_time,
+      ]);
+
+      // Eliminar el registro de la tabla parking_entries
+      const queryDelete = `
+        DELETE FROM parking_entries
+        WHERE plate = $1
+      `;
+      await client.query(queryDelete, [plate]);
+
+      await client.query('COMMIT');
+
       return NextResponse.json(
-        { error: 'Placa no encontrada' },
-        { status: 404 }
+        { message: `Espacio liberado para la placa: ${plate}` },
+        { status: 200 }
       );
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('Error al procesar la salida:', error);
+      return NextResponse.json(
+        { error: 'Error al procesar la salida' },
+        { status: 500 }
+      );
+    } finally {
+      client.release();
     }
-
-    return NextResponse.json(
-      { message: `Espacio liberado para la placa: ${plate}` },
-      { status: 200 }
-    );
   } catch (error) {
-    console.error('Error al liberar el espacio:', error);
+    console.error('Error al conectar con la base de datos:', error);
     return NextResponse.json(
-      { error: 'Error al liberar el espacio en la base de datos' },
+      { error: 'Error al conectar con la base de datos' },
       { status: 500 }
     );
   }
