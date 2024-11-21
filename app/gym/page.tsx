@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Gym() {
@@ -16,11 +16,11 @@ function GymContent() {
   const searchParams = useSearchParams();
 
   // Datos del usuario desde los parámetros de búsqueda
-  const [userData, setUserData] = useState({
+  const userData = {
     name: searchParams.get('name') || 'Usuario Anónimo',
     role: searchParams.get('role') || 'No especificado',
     plate: searchParams.get('plate') || 'Sin placa',
-  });
+  };
 
   const parkingLot = { name: 'Parqueadero Gym', spaces: 10 };
 
