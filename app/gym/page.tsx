@@ -22,7 +22,7 @@ function ParkingContent() {
     plate: searchParams.get('plate') || 'Sin placa',
   };
 
-  // Memoizar la lista de parqueaderos para evitar recrearla en cada render
+  // Lista de parqueaderos
   const parkingLots = useMemo(
     () => [
       { name: 'Parqueadero Gym', spaces: 10 },
@@ -115,6 +115,24 @@ function ParkingContent() {
     }
   };
 
+  if (isConfirmed) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+        <h1 className="text-2xl font-bold text-green-600 mb-4">¡Gracias por su ingreso!</h1>
+        <p className="mb-6">Lo esperamos a la salida.</p>
+        <div className="bg-white p-6 rounded shadow-md text-left">
+          <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
+          <p><strong>Nombre:</strong> {userData.name}</p>
+          <p><strong>Rol:</strong> {userData.role}</p>
+          <p><strong>Placa:</strong> {userData.plate}</p>
+          <p><strong>Parqueadero:</strong> {selectedParkingLot}</p>
+          <p><strong>Espacio:</strong> {selectedSpace}</p>
+          <p><strong>Hora:</strong> {new Date().toLocaleString()}</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!selectedParkingLot) {
     return (
       <div className="min-h-screen bg-gray-100 py-10">
@@ -129,24 +147,6 @@ function ParkingContent() {
               {lot.name}
             </button>
           ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (isConfirmed) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-        <h1 className="text-2xl font-bold text-green-600 mb-4">¡Gracias por su ingreso!</h1>
-        <p className="mb-6">Lo esperamos a la salida.</p>
-        <div className="bg-white p-6 rounded shadow-md text-left">
-          <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
-          <p><strong>Nombre:</strong> {userData.name}</p>
-          <p><strong>Rol:</strong> {userData.role}</p>
-          <p><strong>Placa:</strong> {userData.plate}</p>
-          <p><strong>Parqueadero:</strong> {selectedParkingLot}</p>
-          <p><strong>Espacio:</strong> {selectedSpace}</p>
-          <p><strong>Hora:</strong> {new Date().toLocaleString()}</p>
         </div>
       </div>
     );
