@@ -27,7 +27,7 @@ function GymContent() {
   const [spaces, setSpaces] = useState(
     Array.from({ length: parkingLot.spaces }, (_, i) => ({
       id: i + 1,
-      status: i % 3 === 0 ? 'Ocupado' : 'Disponible',
+      status: 'Disponible', // Todos los espacios inician como "Disponible"
     }))
   );
 
@@ -38,7 +38,33 @@ function GymContent() {
     setSelectedSpace(id);
   };
 
-  const handleConfirm = () => {
+  const sendDataToDatabase = async () => {
+    const body = {
+      name: userData.name,
+      role: userData.role,
+      plate: userData.plate,
+      parkingLot: parkingLot.name,
+      space: selectedSpace,
+    };
+
+    try {
+      const response = await fetch('/api/parking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        console.log('Datos enviados exitosamente a la base de datos.');
+      } else {
+        console.error('Error al enviar los datos:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error al conectar con la base de datos:', error);
+    }
+  };
+
+  const handleConfirm = async () => {
     if (!selectedSpace) {
       alert('Por favor, selecciona un espacio.');
       return;
@@ -50,6 +76,9 @@ function GymContent() {
         space.id === selectedSpace ? { ...space, status: 'Ocupado' } : space
       )
     );
+
+    // Enviar los datos a la base de datos
+    await sendDataToDatabase();
 
     setIsConfirmed(true);
 
