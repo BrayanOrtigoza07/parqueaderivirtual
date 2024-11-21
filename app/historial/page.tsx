@@ -2,9 +2,19 @@
 
 import { useState, useEffect } from 'react';
 
+interface HistoryEntry {
+  name: string;
+  role: string;
+  plate: string;
+  parking_lot: string;
+  space: number;
+  entry_time: string;
+  exit_time?: string;
+}
+
 export default function HistorialPage() {
-  const [historyEntradas, setHistoryEntradas] = useState([]);
-  const [historySalidas, setHistorySalidas] = useState([]);
+  const [historyEntradas, setHistoryEntradas] = useState<HistoryEntry[]>([]);
+  const [historySalidas, setHistorySalidas] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Cargar datos de ambas tablas
@@ -15,8 +25,8 @@ export default function HistorialPage() {
         const salidasResponse = await fetch('/api/history-salidas');
 
         if (entradasResponse.ok && salidasResponse.ok) {
-          const entradasData = await entradasResponse.json();
-          const salidasData = await salidasResponse.json();
+          const entradasData: HistoryEntry[] = await entradasResponse.json();
+          const salidasData: HistoryEntry[] = await salidasResponse.json();
 
           setHistoryEntradas(entradasData);
           setHistorySalidas(salidasData);
@@ -56,7 +66,7 @@ export default function HistorialPage() {
             </tr>
           </thead>
           <tbody>
-            {historyEntradas.map((entry: any, index: number) => (
+            {historyEntradas.map((entry, index) => (
               <tr key={index}>
                 <td className="border border-gray-300 px-4 py-2">{entry.name}</td>
                 <td className="border border-gray-300 px-4 py-2">{entry.role}</td>
@@ -86,7 +96,7 @@ export default function HistorialPage() {
             </tr>
           </thead>
           <tbody>
-            {historySalidas.map((entry: any, index: number) => (
+            {historySalidas.map((entry, index) => (
               <tr key={index}>
                 <td className="border border-gray-300 px-4 py-2">{entry.name}</td>
                 <td className="border border-gray-300 px-4 py-2">{entry.role}</td>
@@ -103,4 +113,3 @@ export default function HistorialPage() {
     </div>
   );
 }
-  
