@@ -7,13 +7,19 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// Manejo del método POST para insertar datos (entradas) en la base de datos
+// Manejo del método POST para insertar datos en ambas tablas
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const query = `
+    const queryParkingEntries = `
       INSERT INTO parking_entries (name, role, plate, parking_lot, space, entry_time)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+      RETURNING *;
+    `;
+
+    const queryHistoryEntradas = `
+      INSERT INTO history_entradas (name, role, plate, parking_lot, space, entry_time)
       VALUES ($1, $2, $3, $4, $5, NOW())
       RETURNING *;
     `;
@@ -27,12 +33,28 @@ export async function POST(req: Request) {
     ];
 
     const client = await pool.connect();
-    const result = await client.query(query, values);
-    client.release();
 
-    return NextResponse.json(result.rows[0], { status: 201 });
+    try {
+      // Insertar en `parking_entries`
+      const resultParkingEntries = await client.query(queryParkingEntries, values);
+
+      // Insertar en `history_entradas`
+      await client.query(queryHistoryEntradas, values);
+
+      client.release();
+
+      // Retornar el resultado de `parking_entries`
+      return NextResponse.json(resultParkingEntries.rows[0], { status: 201 });
+    } catch (error) {
+      client.release();
+      console.error('Error al insertar en las tablas:', error);
+      return NextResponse.json(
+        { error: 'Error al guardar los datos en las tablas.' },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error('Error al guardar los datos:', error);
+    console.error('Error al procesar la solicitud:', error);
     return NextResponse.json(
       { error: 'Error al guardar los datos en la base de datos' },
       { status: 500 }
