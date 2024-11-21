@@ -15,11 +15,11 @@ interface HistorySalida {
 
 export default function Salida() {
   const [plate, setPlate] = useState('');
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(''); // Mensaje reducido
   const [lastRecord, setLastRecord] = useState<HistorySalida | null>(null);
 
   const handlePlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlate(e.target.value.toUpperCase()); // Convertir la placa a mayúsculas por consistencia
+    setPlate(e.target.value.toUpperCase()); // Convertir a mayúsculas por consistencia
   };
 
   const handleExit = async () => {
@@ -37,19 +37,7 @@ export default function Salida() {
       });
 
       if (response.ok) {
-        // Esperar unos milisegundos antes de intentar recuperar el registro
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Solicitar detalles del registro desde `history_salidas`
-        const fetchResponse = await fetch(`/api/history/salida?plate=${plate}`);
-        const record = await fetchResponse.json();
-
-        if (fetchResponse.ok && record.length > 0) {
-          setLastRecord(record[0]); // Guardar el último registro obtenido
-          setMessage(`Espacio liberado exitosamente para la placa: ${plate}.`);
-        } else {
-          setMessage(`Error: No se encontraron datos en el historial para la placa ${plate}.`);
-        }
+        setMessage('Espacio liberado exitosamente.'); // Mensaje simplificado
         setPlate(''); // Limpiar el campo de entrada
       } else {
         const error = await response.json();
@@ -84,36 +72,8 @@ export default function Salida() {
         </button>
       </div>
       {message && (
-        <div className="mt-4 p-4 bg-gray-200 text-center rounded">
+        <div className="mt-4 p-4 bg-green-100 text-green-700 text-center rounded">
           <p>{message}</p>
-        </div>
-      )}
-      {lastRecord && (
-        <div className="mt-6 bg-white p-6 rounded shadow-md text-left">
-          <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
-          <p>
-            <strong>Nombre:</strong> {lastRecord.name}
-          </p>
-          <p>
-            <strong>Rol:</strong> {lastRecord.role}
-          </p>
-          <p>
-            <strong>Placa:</strong> {lastRecord.plate}
-          </p>
-          <p>
-            <strong>Parqueadero:</strong> {lastRecord.parking_lot}
-          </p>
-          <p>
-            <strong>Espacio:</strong> {lastRecord.space}
-          </p>
-          <p>
-            <strong>Hora de Entrada:</strong>{' '}
-            {new Date(lastRecord.entry_time).toLocaleString()}
-          </p>
-          <p>
-            <strong>Hora de Salida:</strong>{' '}
-            {new Date(lastRecord.exit_time).toLocaleString()}
-          </p>
         </div>
       )}
     </div>
