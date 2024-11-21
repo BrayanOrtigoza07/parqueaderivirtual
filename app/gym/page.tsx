@@ -102,24 +102,48 @@ function ParkingContent() {
   if (isConfirmed) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-        <div className="flex items-center space-x-4 mb-6">
-          <h1 className="text-4xl font-bold text-green-600">¡Gracias por su ingreso!</h1>
+        <div className="flex flex-col items-center space-y-6 mb-6">
+          <h1 className="text-5xl font-extrabold text-green-600 text-center">
+            ¡Gracias por su ingreso!
+          </h1>
           <img
             src="https://media1.tenor.com/m/atRVxzCTOVYAAAAC/neon-sign-neon.gif"
             alt="Neon Sign"
-            className="w-20 h-20"
+            className="w-32 h-32"
           />
         </div>
-        <p className="text-lg text-gray-700 mb-8">Lo esperamos a la salida.</p>
-        <div className="bg-white p-8 rounded shadow-md text-left w-96">
-          <h2 className="text-2xl font-bold mb-4 text-center">Detalles del Registro</h2>
-          <div className="text-lg space-y-2">
-            <p><strong>Nombre:</strong> {userData.name}</p>
-            <p><strong>Rol:</strong> {userData.role}</p>
-            <p><strong>Placa:</strong> {userData.plate}</p>
-            <p><strong>Parqueadero:</strong> {selectedParkingLot}</p>
-            <p><strong>Espacio:</strong> {selectedSpace}</p>
-            <p><strong>Hora:</strong> {new Date().toLocaleString()}</p>
+        <p className="text-xl text-gray-700 mb-8">Lo esperamos a la salida.</p>
+        <div className="bg-white p-8 rounded shadow-lg text-left w-96">
+          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+            Detalles del Registro
+          </h2>
+          <div className="text-lg space-y-3">
+            <p>
+              <strong className="text-gray-700">Nombre:</strong>{' '}
+              <span className="text-gray-900">{userData.name}</span>
+            </p>
+            <p>
+              <strong className="text-gray-700">Rol:</strong>{' '}
+              <span className="text-gray-900">{userData.role}</span>
+            </p>
+            <p>
+              <strong className="text-gray-700">Placa:</strong>{' '}
+              <span className="text-gray-900">{userData.plate}</span>
+            </p>
+            <p>
+              <strong className="text-gray-700">Parqueadero:</strong>{' '}
+              <span className="text-gray-900">{selectedParkingLot}</span>
+            </p>
+            <p>
+              <strong className="text-gray-700">Espacio:</strong>{' '}
+              <span className="text-gray-900">{selectedSpace}</span>
+            </p>
+            <p>
+              <strong className="text-gray-700">Hora:</strong>{' '}
+              <span className="text-gray-900">
+                {new Date().toLocaleString()}
+              </span>
+            </p>
           </div>
         </div>
       </div>
@@ -134,7 +158,9 @@ function ParkingContent() {
       >
         Volver a Registro
       </button>
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">{selectedParkingLot}</h1>
+      <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
+        {selectedParkingLot}
+      </h1>
       <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
         {spaces.map((space) => (
           <button
@@ -143,14 +169,16 @@ function ParkingContent() {
             disabled={space.status === 'Ocupado'}
             className={`p-6 border rounded-lg text-center font-bold ${
               selectedSpace === space.id
-                ? 'bg-yellow-400 text-black' // Estilo especial para espacio seleccionado
+                ? 'bg-yellow-400 text-black'
                 : space.status === 'Disponible'
                 ? space.id === 1 || space.id === 2
                   ? 'bg-blue-500 text-white'
                   : 'bg-green-500 text-white'
                 : 'bg-red-500 text-white'
             } ${
-              space.status === 'Ocupado' ? 'cursor-not-allowed' : 'hover:scale-105 transform transition-transform'
+              space.status === 'Ocupado'
+                ? 'cursor-not-allowed'
+                : 'hover:scale-105 transform transition-transform'
             }`}
           >
             {space.status === 'Disponible' ? `Espacio ${space.id}` : 'Ocupado'}
