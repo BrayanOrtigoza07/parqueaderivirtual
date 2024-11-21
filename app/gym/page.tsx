@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Gym() {
@@ -15,7 +15,7 @@ function GymContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Obtener parámetros desde la URL
+  // Datos del usuario desde los parámetros
   const userData = {
     name: searchParams.get('name') || 'Usuario Anónimo',
     role: searchParams.get('role') || 'No especificado',
@@ -24,21 +24,46 @@ function GymContent() {
 
   const parkingLot = { name: 'Parqueadero Gym', spaces: 10 };
 
+  // Estado para los espacios del parqueadero
   const [spaces, setSpaces] = useState(
     Array.from({ length: parkingLot.spaces }, (_, i) => ({
       id: i + 1,
-      status: 'Disponible', // Inicializa todos los espacios como "Disponible"
+      status: 'Disponible', // Inicializar todos como disponibles
     }))
   );
 
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
+  // Cargar espacios desde la base de datos
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      try {
+        const response = await fetch(`/api/parking/spaces?parkingLot=${encodeURIComponent(parkingLot.name)}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSpaces(data.spaces || []); // Asegurar que se obtenga un arreglo
+        } else {
+          console.error('Error al cargar los espacios:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error al conectar con la API:', error);
+      }
+    };
+
+    fetchSpaces();
+  }, []);
+
   const handleSpaceSelect = (id: number) => {
     setSelectedSpace(id);
   };
 
   const sendDataToDatabase = async () => {
+    if (!selectedSpace) {
+      console.error('No hay un espacio seleccionado');
+      return;
+    }
+
     const body = {
       name: userData.name,
       role: userData.role,
@@ -55,12 +80,12 @@ function GymContent() {
       });
 
       if (response.ok) {
-        console.log('Datos enviados a la base de datos exitosamente.');
+        console.log('Datos enviados exitosamente.');
       } else {
         console.error('Error al enviar los datos:', await response.text());
       }
     } catch (error) {
-      console.error('Error al conectar con la base de datos:', error);
+      console.error('Error al conectar con la API:', error);
     }
   };
 
@@ -70,15 +95,17 @@ function GymContent() {
       return;
     }
 
-    // Actualizar el estado del espacio seleccionado
-    setSpaces((prevSpaces) =>
-      prevSpaces.map((space) =>
-        space.id === selectedSpace ? { ...space, status: 'Ocupado' } : space
-      )
-    );
-
     // Enviar los datos a la base de datos
     await sendDataToDatabase();
+
+    // Actualizar el estado del espacio localmente
+    setSpaces((prevSpaces) =>
+      prevSpaces.map((space) =>
+        space.id === selectedSpace
+          ? { ...space, status: 'Ocupado' }
+          : space
+      )
+    );
 
     setIsConfirmed(true);
 
