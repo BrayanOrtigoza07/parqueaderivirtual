@@ -15,14 +15,12 @@ function ParkingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Obtener datos del usuario desde los parámetros de búsqueda
   const userData = {
     name: searchParams.get('name') || 'Usuario Anónimo',
     role: searchParams.get('role') || 'No especificado',
     plate: searchParams.get('plate') || 'Sin placa',
   };
 
-  // Definir los espacios de parqueaderos con tipos explícitos
   const parkingSpaces: Record<string, number> = {
     'Parqueadero Gym': 10,
     'Parqueadero Agronomía': 12,
@@ -34,7 +32,6 @@ function ParkingContent() {
   const [selectedSpace, setSelectedSpace] = useState<number | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  // Cargar espacios ocupados desde la base de datos
   useEffect(() => {
     const fetchOccupiedSpaces = async () => {
       try {
@@ -124,20 +121,28 @@ function ParkingContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
+    <div className="min-h-screen bg-gray-100 py-10 relative">
+      <button
+        onClick={() => router.push('/registro')}
+        className="absolute top-4 left-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+      >
+        Volver a Registro
+      </button>
       <h1 className="text-3xl font-bold text-center mb-6">{selectedParkingLot}</h1>
-      <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
+      <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
         {spaces.map((space) => (
           <button
             key={space.id}
             onClick={() => handleSpaceSelect(space.id)}
             disabled={space.status === 'Ocupado'}
-            className={`p-4 border rounded text-center font-bold ${
+            className={`p-6 border rounded-lg text-center font-bold ${
               space.status === 'Disponible'
-                ? selectedSpace === space.id
-                  ? 'bg-blue-300 text-white'
-                  : 'bg-green-200'
-                : 'bg-red-200 text-gray-500 cursor-not-allowed'
+                ? space.id === 1 || space.id === 2
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-green-500 text-white'
+                : 'bg-red-500 text-white'
+            } ${
+              space.status === 'Ocupado' ? 'cursor-not-allowed' : 'hover:scale-105 transform transition-transform'
             }`}
           >
             {space.status === 'Disponible' ? `Espacio ${space.id}` : 'Ocupado'}
