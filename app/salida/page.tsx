@@ -2,10 +2,21 @@
 
 import { useState } from 'react';
 
+// Definir el tipo del registro que se espera
+interface HistorySalida {
+  name: string;
+  role: string;
+  plate: string;
+  parking_lot: string;
+  space: number;
+  entry_time: string;
+  exit_time: string;
+}
+
 export default function Salida() {
   const [plate, setPlate] = useState('');
   const [message, setMessage] = useState('');
-  const [lastRecord, setLastRecord] = useState<any | null>(null);
+  const [lastRecord, setLastRecord] = useState<HistorySalida | null>(null); // Definir tipo explícito
 
   const handlePlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPlate(e.target.value);
@@ -30,11 +41,11 @@ export default function Salida() {
         const fetchResponse = await fetch(`/api/history/salida?plate=${plate}`);
         const record = await fetchResponse.json();
 
-        if (fetchResponse.ok) {
+        if (fetchResponse.ok && record.length > 0) {
           setLastRecord(record[0]); // Guardar el último registro obtenido
           setMessage(`Espacio liberado exitosamente para la placa: ${plate}.`);
         } else {
-          setMessage(`Error al obtener el historial: ${record.error}`);
+          setMessage(`Error al obtener el historial: ${record.error || 'No se encontraron datos.'}`);
         }
         setPlate(''); // Limpiar el campo de entrada
       } else {
@@ -77,18 +88,18 @@ export default function Salida() {
       {lastRecord && (
         <div className="mt-6 bg-white p-6 rounded shadow-md text-left">
           <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
-          <p><strong>Nombre:</strong> {lastRecord?.name || 'N/A'}</p>
-          <p><strong>Rol:</strong> {lastRecord?.role || 'N/A'}</p>
-          <p><strong>Placa:</strong> {lastRecord?.plate || 'N/A'}</p>
-          <p><strong>Parqueadero:</strong> {lastRecord?.parking_lot || 'N/A'}</p>
-          <p><strong>Espacio:</strong> {lastRecord?.space || 'N/A'}</p>
+          <p><strong>Nombre:</strong> {lastRecord.name}</p>
+          <p><strong>Rol:</strong> {lastRecord.role}</p>
+          <p><strong>Placa:</strong> {lastRecord.plate}</p>
+          <p><strong>Parqueadero:</strong> {lastRecord.parking_lot}</p>
+          <p><strong>Espacio:</strong> {lastRecord.space}</p>
           <p>
             <strong>Hora de Entrada:</strong>{' '}
-            {lastRecord?.entry_time ? new Date(lastRecord.entry_time).toLocaleString() : 'N/A'}
+            {new Date(lastRecord.entry_time).toLocaleString()}
           </p>
           <p>
             <strong>Hora de Salida:</strong>{' '}
-            {lastRecord?.exit_time ? new Date(lastRecord.exit_time).toLocaleString() : 'N/A'}
+            {new Date(lastRecord.exit_time).toLocaleString()}
           </p>
         </div>
       )}
