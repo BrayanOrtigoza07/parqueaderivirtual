@@ -6,6 +6,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
+// Manejo del método GET para obtener registros de history_salidas
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const plate = searchParams.get('plate'); // Obtener la placa de los parámetros de consulta, si existe
@@ -37,6 +38,33 @@ export async function GET(req: Request) {
     console.error('Error al obtener history_salidas:', error);
     return NextResponse.json(
       { error: 'Error al obtener history_salidas' },
+      { status: 500 }
+    );
+  }
+}
+
+// Manejo del método POST para insertar registros en history_salidas
+export async function POST(req: Request) {
+  try {
+    const { name, role, plate, parkingLot, space, entryTime } = await req.json();
+
+    const query = `
+      INSERT INTO history_salidas (name, role, plate, parking_lot, space, entry_time, exit_time)
+      VALUES ($1, $2, $3, $4, $5, $6, NOW())
+      RETURNING *;
+    `;
+
+    const values = [name, role, plate, parkingLot, space, entryTime];
+
+    const client = await pool.connect();
+    const result = await client.query(query, values);
+    client.release();
+
+    return NextResponse.json(result.rows[0], { status: 201 });
+  } catch (error) {
+    console.error('Error al insertar en history_salidas:', error);
+    return NextResponse.json(
+      { error: 'Error al insertar en history_salidas' },
       { status: 500 }
     );
   }
