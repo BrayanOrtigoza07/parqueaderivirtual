@@ -31,7 +31,6 @@ export default function Registro() {
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center px-4">
-      {/* Título */}
       <div className="text-center">
         <h1 className="text-4xl font-extrabold text-blue-600 mb-8">
           Registro de Vehículo
@@ -41,7 +40,6 @@ export default function Registro() {
         </p>
       </div>
 
-      {/* Formulario */}
       <form className="bg-white shadow-lg p-8 rounded-lg w-full max-w-lg">
         <div className="mb-6">
           <label className="block font-semibold mb-2 text-gray-700">
@@ -52,7 +50,7 @@ export default function Registro() {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Ingrese su nombre"
             required
           />
@@ -63,7 +61,7 @@ export default function Registro() {
             name="role"
             value={formData.role}
             onChange={handleInputChange}
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="" disabled>
@@ -83,14 +81,13 @@ export default function Registro() {
             name="plate"
             value={formData.plate}
             onChange={handleInputChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Ingrese la placa del vehículo"
             required
           />
         </div>
       </form>
 
-      {/* Botones de parqueaderos */}
       <div className="mt-8 text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Selecciona un parqueadero</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -115,7 +112,6 @@ export default function Registro() {
         </div>
       </div>
 
-      {/* Botón para regresar */}
       <div className="mt-8">
         <button
           onClick={() => router.push('/')}
