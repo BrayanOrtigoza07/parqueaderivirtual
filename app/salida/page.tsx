@@ -2,9 +2,20 @@
 
 import { useState } from 'react';
 
+interface UserDetails {
+  name: string;
+  role: string;
+  plate: string;
+  parking_lot: string;
+  space: number;
+  entry_time: string;
+  exit_time: string;
+}
+
 export default function Salida() {
   const [plate, setPlate] = useState('');
   const [message, setMessage] = useState('');
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
 
   const handlePlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPlate(e.target.value);
@@ -17,6 +28,7 @@ export default function Salida() {
     }
 
     try {
+      // Liberar espacio
       const response = await fetch('/api/salida', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -24,7 +36,17 @@ export default function Salida() {
       });
 
       if (response.ok) {
-        setMessage('Espacio liberado exitosamente.');
+        // Obtener detalles del usuario de la tabla history_salidas
+        const fetchDetails = await fetch(`/api/history/salida?plate=${plate}`);
+        const details = await fetchDetails.json();
+
+        if (fetchDetails.ok && details.length > 0) {
+          setUserDetails(details[0]); // Guardar los detalles obtenidos
+          setMessage('Espacio liberado exitosamente.');
+        } else {
+          setMessage('Espacio liberado, pero no se encontraron datos del usuario.');
+        }
+
         setPlate(''); // Limpiar el campo de entrada
       } else {
         const error = await response.json();
@@ -61,6 +83,18 @@ export default function Salida() {
       {message && (
         <div className="mt-4 p-4 bg-gray-200 text-center rounded">
           <p>{message}</p>
+        </div>
+      )}
+      {userDetails && (
+        <div className="mt-6 bg-white p-6 rounded shadow-md text-left">
+          <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
+          <p><strong>Nombre:</strong> {userDetails.name}</p>
+          <p><strong>Rol:</strong> {userDetails.role}</p>
+          <p><strong>Placa:</strong> {userDetails.plate}</p>
+          <p><strong>Parqueadero:</strong> {userDetails.parking_lot}</p>
+          <p><strong>Espacio:</strong> {userDetails.space}</p>
+          <p><strong>Hora de Entrada:</strong> {new Date(userDetails.entry_time).toLocaleString()}</p>
+          <p><strong>Hora de Salida:</strong> {new Date(userDetails.exit_time).toLocaleString()}</p>
         </div>
       )}
     </div>
