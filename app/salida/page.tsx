@@ -36,7 +36,7 @@ export default function Salida() {
       });
 
       if (response.ok) {
-        // Obtener detalles del usuario de la tabla history_salidas
+        // Obtener detalles del registro de la tabla history_salidas
         const fetchDetails = await fetch(`/api/history/salida?plate=${plate}`);
         const details = await fetchDetails.json();
 
