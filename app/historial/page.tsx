@@ -18,7 +18,6 @@ export default function HistorialPage() {
   const [loading, setLoading] = useState(true);
   const [statistics, setStatistics] = useState({ mostUsedParking: '', mostFrequentRole: '' });
 
-  // Cargar datos de ambas tablas
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,7 +31,6 @@ export default function HistorialPage() {
           setHistoryEntradas(entradasData);
           setHistorySalidas(salidasData);
 
-          // Calcular estadísticas
           calculateStatistics(entradasData);
         } else {
           console.error('Error al cargar los datos');
@@ -48,7 +46,6 @@ export default function HistorialPage() {
   }, []);
 
   const calculateStatistics = (entries: HistoryEntry[]) => {
-    // Calcular el parqueadero más usado
     const parkingCount: Record<string, number> = {};
     const roleCount: Record<string, number> = {};
 
@@ -88,9 +85,9 @@ export default function HistorialPage() {
       </div>
 
       {/* Historial de Entradas */}
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded p-6 mb-8">
+      <div className="max-w-6xl mx-auto bg-white shadow-md rounded p-6 mb-8">
         <h2 className="text-2xl font-semibold mb-4 text-gray-700">Historial de Entradas</h2>
-        <table className="table-auto w-full border-collapse border border-gray-300">
+        <table className="table-auto w-full border-collapse border border-gray-300 text-sm">
           <thead className="bg-blue-500 text-white">
             <tr>
               <th className="border border-gray-300 px-4 py-2">Nombre</th>
@@ -104,12 +101,14 @@ export default function HistorialPage() {
           <tbody>
             {historyEntradas.map((entry, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                <td className="border border-gray-300 px-4 py-2">{entry.name}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.role}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.plate}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.parking_lot}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.space}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.entry_time}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.name}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.role}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.plate}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.parking_lot}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.space}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {new Date(entry.entry_time).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -117,9 +116,9 @@ export default function HistorialPage() {
       </div>
 
       {/* Historial de Salidas */}
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded p-6">
+      <div className="max-w-6xl mx-auto bg-white shadow-md rounded p-6">
         <h2 className="text-2xl font-semibold mb-4 text-gray-700">Historial de Salidas</h2>
-        <table className="table-auto w-full border-collapse border border-gray-300">
+        <table className="table-auto w-full border-collapse border border-gray-300 text-sm">
           <thead className="bg-blue-500 text-white">
             <tr>
               <th className="border border-gray-300 px-4 py-2">Nombre</th>
@@ -134,13 +133,17 @@ export default function HistorialPage() {
           <tbody>
             {historySalidas.map((entry, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                <td className="border border-gray-300 px-4 py-2">{entry.name}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.role}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.plate}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.parking_lot}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.space}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.entry_time}</td>
-                <td className="border border-gray-300 px-4 py-2">{entry.exit_time}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.name}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.role}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.plate}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.parking_lot}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.space}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {new Date(entry.entry_time).toLocaleString()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {entry.exit_time ? new Date(entry.exit_time).toLocaleString() : 'N/A'}
+                </td>
               </tr>
             ))}
           </tbody>
