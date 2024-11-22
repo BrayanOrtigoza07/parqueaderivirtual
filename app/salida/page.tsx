@@ -2,23 +2,12 @@
 
 import { useState } from 'react';
 
-interface UserDetails {
-  name: string;
-  role: string;
-  plate: string;
-  parking_lot: string;
-  space: number;
-  entry_time: string;
-  exit_time: string;
-}
-
 export default function Salida() {
   const [plate, setPlate] = useState('');
   const [message, setMessage] = useState('');
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
 
   const handlePlateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlate(e.target.value);
+    setPlate(e.target.value.toUpperCase()); // Convertir la placa a mayúsculas
   };
 
   const handleExit = async () => {
@@ -28,7 +17,7 @@ export default function Salida() {
     }
 
     try {
-      // Liberar espacio y obtener detalles del usuario
+      // Enviar solicitud para liberar espacio
       const response = await fetch('/api/salida', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,13 +25,8 @@ export default function Salida() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        if (data.details) {
-          setUserDetails(data.details); // Guardar los detalles del servidor
-          setMessage('Espacio liberado exitosamente.');
-        } else {
-          setMessage('Espacio liberado, pero no se encontraron detalles del registro.');
-        }
+        // Mostrar mensaje de éxito con la placa
+        setMessage(`Salida registrada para la placa ${plate}. ¡Regresa pronto!`);
         setPlate(''); // Limpiar el campo de entrada
       } else {
         const error = await response.json();
@@ -55,44 +39,37 @@ export default function Salida() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold mb-6">Salida de Vehículo</h1>
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Placa del vehículo</label>
+    <div className="min-h-screen bg-gradient-to-br from-blue-200 to-blue-100 flex flex-col items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 className="text-4xl font-bold text-center text-blue-600 mb-6">
+          Salida de Vehículo
+        </h1>
+        <div className="mb-6">
+          <label className="block font-semibold text-gray-700 mb-2">
+            Placa del vehículo
+          </label>
           <input
             type="text"
             value={plate}
             onChange={handlePlateChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Ingrese la placa del vehículo"
+            maxLength={10}
             required
           />
         </div>
         <button
           onClick={handleExit}
-          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition"
         >
           Liberar Espacio
         </button>
+        {message && (
+          <div className="mt-6 p-4 bg-green-100 border border-green-400 text-green-700 text-center rounded-lg">
+            <p className="font-semibold">{message}</p>
+          </div>
+        )}
       </div>
-      {message && (
-        <div className="mt-4 p-4 bg-gray-200 text-center rounded">
-          <p>{message}</p>
-        </div>
-      )}
-      {userDetails && (
-        <div className="mt-6 bg-white p-6 rounded shadow-md text-left">
-          <h2 className="text-xl font-bold mb-4 text-green-600">Detalles del Registro</h2>
-          <p><strong>Nombre:</strong> {userDetails.name}</p>
-          <p><strong>Rol:</strong> {userDetails.role}</p>
-          <p><strong>Placa:</strong> {userDetails.plate}</p>
-          <p><strong>Parqueadero:</strong> {userDetails.parking_lot}</p>
-          <p><strong>Espacio:</strong> {userDetails.space}</p>
-          <p><strong>Hora de Entrada:</strong> {new Date(userDetails.entry_time).toLocaleString()}</p>
-          <p><strong>Hora de Salida:</strong> {new Date(userDetails.exit_time).toLocaleString()}</p>
-        </div>
-      )}
     </div>
   );
 }
