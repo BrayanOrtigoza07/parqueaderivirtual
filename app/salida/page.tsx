@@ -28,7 +28,7 @@ export default function Salida() {
     }
 
     try {
-      // Liberar espacio
+      // Liberar espacio y obtener detalles del usuario
       const response = await fetch('/api/salida', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,17 +36,13 @@ export default function Salida() {
       });
 
       if (response.ok) {
-        // Obtener detalles del registro de la tabla history_salidas
-        const fetchDetails = await fetch(`/api/history/salida?plate=${plate}`);
-        const details = await fetchDetails.json();
-
-        if (fetchDetails.ok && details.length > 0) {
-          setUserDetails(details[0]); // Guardar los detalles obtenidos
+        const data = await response.json();
+        if (data.details) {
+          setUserDetails(data.details); // Guardar los detalles del servidor
           setMessage('Espacio liberado exitosamente.');
         } else {
-          setMessage('Espacio liberado, pero no se encontraron datos del usuario.');
+          setMessage('Espacio liberado, pero no se encontraron detalles del registro.');
         }
-
         setPlate(''); // Limpiar el campo de entrada
       } else {
         const error = await response.json();
@@ -87,7 +83,7 @@ export default function Salida() {
       )}
       {userDetails && (
         <div className="mt-6 bg-white p-6 rounded shadow-md text-left">
-          <h2 className="text-xl font-bold mb-4">Detalles del Registro</h2>
+          <h2 className="text-xl font-bold mb-4 text-green-600">Detalles del Registro</h2>
           <p><strong>Nombre:</strong> {userDetails.name}</p>
           <p><strong>Rol:</strong> {userDetails.role}</p>
           <p><strong>Placa:</strong> {userDetails.plate}</p>

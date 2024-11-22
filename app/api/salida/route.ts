@@ -19,15 +19,11 @@ export async function POST(req: Request) {
 
     const client = await pool.connect();
 
-    // Transacción para garantizar consistencia
     try {
       await client.query('BEGIN');
 
       // Obtener el registro antes de eliminarlo
-      const querySelect = `
-        SELECT * FROM parking_entries
-        WHERE plate = $1
-      `;
+      const querySelect = `SELECT * FROM parking_entries WHERE plate = $1`;
       const resultSelect = await client.query(querySelect, [plate]);
 
       if (resultSelect.rowCount === 0) {
@@ -40,7 +36,7 @@ export async function POST(req: Request) {
 
       const record = resultSelect.rows[0];
 
-      // Insertar el registro en la tabla history_salidas
+      // Insertar en history_salidas
       const queryInsertHistory = `
         INSERT INTO history_salidas (name, role, plate, parking_lot, space, entry_time, exit_time)
         VALUES ($1, $2, $3, $4, $5, $6, NOW())
@@ -54,17 +50,25 @@ export async function POST(req: Request) {
         record.entry_time,
       ]);
 
-      // Eliminar el registro de la tabla parking_entries
-      const queryDelete = `
-        DELETE FROM parking_entries
-        WHERE plate = $1
-      `;
+      // Eliminar de parking_entries
+      const queryDelete = `DELETE FROM parking_entries WHERE plate = $1`;
       await client.query(queryDelete, [plate]);
 
       await client.query('COMMIT');
 
       return NextResponse.json(
-        { message: `Espacio liberado para la placa: ${plate}` },
+        {
+          message: 'Espacio liberado exitosamente.',
+          details: {
+            name: record.name,
+            role: record.role,
+            plate: record.plate,
+            parking_lot: record.parking_lot,
+            space: record.space,
+            entry_time: record.entry_time,
+            exit_time: new Date().toISOString(),
+          },
+        },
         { status: 200 }
       );
     } catch (error) {
