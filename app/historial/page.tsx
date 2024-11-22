@@ -75,7 +75,7 @@ export default function HistorialPage() {
 
       {/* Estadísticas */}
       <div className="max-w-4xl mx-auto bg-blue-100 border border-blue-300 rounded p-6 mb-8 shadow-md">
-        <h2 className="text-2xl font-bold mb-4 text-blue-700">Estadísticas</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-blue-700">Estadísticas</h2>
         <p className="text-lg font-medium">
           <strong>Parqueadero más usado:</strong> {statistics.mostUsedParking || 'Sin datos'}
         </p>
@@ -86,31 +86,63 @@ export default function HistorialPage() {
 
       {/* Historial de Entradas */}
       <div className="max-w-6xl mx-auto bg-white shadow-md rounded p-6 mb-8">
-        <h2 className="text-2xl font-bold mb-4 text-gray-700">Historial de Entradas</h2>
-        <table className="table-auto w-full border-collapse border border-gray-300 text-base">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-700">Historial de Entradas</h2>
+        <table className="table-auto w-full border-collapse border border-gray-300 text-sm">
           <thead className="bg-blue-500 text-white">
             <tr>
-              <th className="border border-gray-300 px-6 py-3">Nombre</th>
-              <th className="border border-gray-300 px-6 py-3">Rol</th>
-              <th className="border border-gray-300 px-6 py-3">Placa</th>
-              <th className="border border-gray-300 px-6 py-3">Parqueadero</th>
-              <th className="border border-gray-300 px-6 py-3">Espacio</th>
-              <th className="border border-gray-300 px-6 py-3">Hora de Entrada</th>
+              <th className="border border-gray-300 px-4 py-2">Nombre</th>
+              <th className="border border-gray-300 px-4 py-2">Rol</th>
+              <th className="border border-gray-300 px-4 py-2">Placa</th>
+              <th className="border border-gray-300 px-4 py-2">Parqueadero</th>
+              <th className="border border-gray-300 px-4 py-2">Espacio</th>
+              <th className="border border-gray-300 px-4 py-2">Hora de Entrada</th>
             </tr>
           </thead>
           <tbody>
             {historyEntradas.map((entry, index) => (
-              <tr
-                key={index}
-                className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
-              >
-                <td className="border border-gray-300 px-6 py-3 text-gray-900">{entry.name}</td>
-                <td className="border border-gray-300 px-6 py-3 text-gray-900">{entry.role}</td>
-                <td className="border border-gray-300 px-6 py-3 text-gray-900">{entry.plate}</td>
-                <td className="border border-gray-300 px-6 py-3 text-gray-900">{entry.parking_lot}</td>
-                <td className="border border-gray-300 px-6 py-3 text-gray-900">{entry.space}</td>
-                <td className="border border-gray-300 px-6 py-3 text-gray-900">
+              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.name}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.role}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.plate}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.parking_lot}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.space}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
                   {new Date(entry.entry_time).toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Historial de Salidas */}
+      <div className="max-w-6xl mx-auto bg-white shadow-md rounded p-6">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-700">Historial de Salidas</h2>
+        <table className="table-auto w-full border-collapse border border-gray-300 text-sm">
+          <thead className="bg-blue-500 text-white">
+            <tr>
+              <th className="border border-gray-300 px-4 py-2">Nombre</th>
+              <th className="border border-gray-300 px-4 py-2">Rol</th>
+              <th className="border border-gray-300 px-4 py-2">Placa</th>
+              <th className="border border-gray-300 px-4 py-2">Parqueadero</th>
+              <th className="border border-gray-300 px-4 py-2">Espacio</th>
+              <th className="border border-gray-300 px-4 py-2">Hora de Entrada</th>
+              <th className="border border-gray-300 px-4 py-2">Hora de Salida</th>
+            </tr>
+          </thead>
+          <tbody>
+            {historySalidas.map((entry, index) => (
+              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.name}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.role}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.plate}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.parking_lot}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{entry.space}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {new Date(entry.entry_time).toLocaleString()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {entry.exit_time ? new Date(entry.exit_time).toLocaleString() : 'N/A'}
                 </td>
               </tr>
             ))}
